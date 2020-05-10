@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Document</title>
+    <base target="_top" />
+    <?!= include('css'); ?>
+    <?let url = getScriptUrl();?>
+  </head>
+  <body>
+    <h1>マウス管理フォーム</h1>
+    使用したマウス
+    <select id="sheetname" onchange="loadsheet(this);" required>
+      <option value="メス">メス</option>
+      <option value="オス">オス</option>
+      <option value="交配メス">交配メス</option>
+      <option value="交配オス">交配オス</option>
+    </select>
+    <br>
+    <div id="main_table">
+    </div>
+    <br>
+    <input type="text" id="experiment" value="IVF">
+    <button id="submit" onclick="delete_from_sheet();">送信する</button>
+    <?!= include('js_slaughter'); ?>
+  </body>
+</html>

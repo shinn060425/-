@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Document</title>
+    <base target="_top" />
+    <?!= include('css'); ?>
+    <?let url = getScriptUrl();?>
+  </head>
+  <body>
+    <h1>マウス管理フォーム</h1>
+    <select id="which_mating" onchange="loadsheet(this);" required>
+      <option value="start" selected>交配開始(休憩→交配中)</option>
+      <option value="finish">交配終了(交配中→妊娠)</option>
+    </select>
+    <br>
+    交配メス(♀)
+    <div id="main_table">
+    </div>
+    <br>
+    交配オス(♂)
+    <div id="sub_table">
+    </div>
+    <br>
+    <button id="submit" onclick="mating_on_sheet();">送信する</button>
+    <?!= include('js_mating'); ?>
+  </body>
+</html>

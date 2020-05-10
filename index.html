@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Document</title>
+    <base target="_top" />
+    <?!= include('css'); ?>
+    <!---html間の遷移用--->
+    <?let url = getScriptUrl();?>
+  </head>
+  <body>
+    <h1>マウス管理フォーム</h1>
+    <button onclick="window.top.location.href='<?!=url?>?page=born_mouse'">生まれた</button><br>
+    <button onclick="window.top.location.href='<?!=url?>?page=slaughter_mouse'">屠殺した</button><br>
+    <button onclick="window.top.location.href='<?!=url?>?page=discrimination_mouse'">仔分け</button><br>
+    <button onclick="window.top.location.href='<?!=url?>?page=mating_mouse'">交配</button><br>
+  </body>
+</html>
+

@@ -1,0 +1,146 @@
+<script>
+  //スプレッドシートの値をselectの要素に導入する関数。"https://qiita.com/non-programmer/items/e822dbeb7b3ab6e403b3"を参考にした。
+  function loadsheet() {
+    let sheetname = "交配メス";
+    let sheetname2 = "交配オス";
+    //.gs内のloading()を呼び出し、読み込み後にListBack()でselect要素に選択肢を設定します。
+    google.script.run.withSuccessHandler(ListBack).loading(sheetname);
+    google.script.run.withSuccessHandler(ListBack2).loading(sheetname2);
+  }
+ 
+  //リスト読み込み
+  function ListBack(data) {
+    let main_table = document.getElementById('main_table');
+    let which_mating = document.getElementById("which_mating").value;
+    let which_cond = "";
+    if (which_mating ==  "start") {
+      which_cond = "休憩";
+    } else if (which_mating == "finish") {
+      which_cond = "交配中";
+    }
+    //選択を変えたときに前回の情報が残らないようにする
+    while (main_table.firstChild) {
+      main_table.removeChild(main_table.firstChild);
+    }
+    let table = document.createElement('table');
+    table.setAttribute('id', 'mouse_table1');
+    for (let i=0, k=0; i<data.length; i++) {
+      if (i==0 || data[i][5] == which_cond){
+        let tr = document.createElement('tr');
+        if (i==0) {
+          let tdbutton = document.createElement('td');
+          tdbutton.innerHTML = "選択";
+          tr.appendChild(tdbutton);
+        } else {
+          let tdbutton = document.createElement('td');
+          let radio = document.createElement('input');
+          radio.setAttribute('type', 'radio');
+          radio.setAttribute('name', 'radio1');
+          radio.setAttribute('id', i);
+          if (k==1) {
+            radio.setAttribute('checked', 'checked');
+          }
+          tdbutton.appendChild(radio);
+          tr.appendChild(tdbutton);
+        }
+        for (let j=0; j<data[i].length; j++) {
+          if (i==0){
+            let th = document.createElement('th');
+            th.textContent = data[i][j];
+            tr.appendChild(th);
+          } else {
+            let td = document.createElement('td');
+            td.textContent = data[i][j];
+            tr.appendChild(td);
+          }
+        }
+        table.appendChild(tr);
+        k++;
+      }
+    }
+    main_table.appendChild(table);
+  }
+  
+  function ListBack2(data) {
+    let main_table = document.getElementById('sub_table');
+    let which_mating = document.getElementById("which_mating").value;
+    let which_cond = "";
+    if (which_mating ==  "start") {
+      which_cond = "休憩";
+    } else if (which_mating == "finish") {
+      which_cond = "交配中";
+    }
+    //選択を変えたときに前回の情報が残らないようにする
+    while (main_table.firstChild) {
+      main_table.removeChild(main_table.firstChild);
+    }
+    let table = document.createElement('table');
+    table.setAttribute('id', 'mouse_table2')
+    for (let i=0, k=0; i<data.length; i++) {
+      if (i==0 || data[i][5] == which_cond){
+        let tr = document.createElement('tr');
+        if (i==0) {
+          let tdbutton = document.createElement('td');
+          tdbutton.innerHTML = "選択";
+          tr.appendChild(tdbutton);
+        } else {
+          let tdbutton = document.createElement('td');
+          let radio = document.createElement('input');
+          radio.setAttribute('type', 'radio');
+          radio.setAttribute('name', 'radio2');
+          radio.setAttribute('id', i);
+          if (k==1) {
+            radio.setAttribute('checked', 'checked')
+          }
+          tdbutton.appendChild(radio);
+          tr.appendChild(tdbutton);
+        }
+        for (let j=0; j<data[i].length; j++) {
+          if (i==0){
+            let th = document.createElement('th');
+            th.textContent = data[i][j];
+            tr.appendChild(th);
+          } else {
+            let td = document.createElement('td');
+            td.textContent = data[i][j];
+            tr.appendChild(td);
+          }
+        }
+        table.appendChild(tr);
+        k++;
+      }
+    }
+    main_table.appendChild(table);
+  }
+  
+  function mating_on_sheet() {
+    //選択されているラジオボタンのrowを受け取る
+    let row1 = 0
+    let radio1_all = document.getElementsByName("radio1");
+    for (let i = 0; i < radio1_all.length; i++){
+      if (radio1_all[i].checked == true){
+        row1 = i + 1;
+        break;
+      }
+    }
+    let row2 = 0
+    let radio2_all = document.getElementsByName("radio2");
+    for (let i = 0; i < radio2_all.length; i++){
+      if (radio2_all[i].checked == true){
+        row2 = i + 1;
+        break;
+      }
+    }
+    let which_mating = document.getElementById("which_mating").value;
+    
+    let female_prefix = mouse_table1.rows[row1].cells[4].innerHTML;
+    let male_prefix = mouse_table2.rows[row2].cells[4].innerHTML;
+    //mating_on_sheet_gsに(start or finish、交配メスのprefix、交配オスのprefix)を投げる
+    google.script.run.mating_on_sheet_gs(which_mating, female_prefix, male_prefix);
+    alert("スプレッドシートを変更しました！");
+    window.top.location.href= newUrl + '?page=result';
+  }
+  
+  google.script.run.withSuccessHandler(function(url){newUrl = url;}).getScriptUrl();
+  window.addEventListener('DOMContentLoaded', loadsheet());
+</script>

@@ -1,0 +1,92 @@
+<script>
+  function loadsheet() {
+    let sheetname = "交配メス";
+    //.gs内のloading()を呼び出し、読み込み後にListBack()でselect要素に選択肢を設定します。
+    google.script.run.withSuccessHandler(ListBack).loading(sheetname);
+  }
+  
+  //リスト読み込み
+  function ListBack(data) {
+    let main_table = document.getElementById('main_table');
+    //選択を変えたときに前回の情報が残らないようにする
+    while (main_table.firstChild) {
+      main_table.removeChild(main_table.firstChild);
+    }
+    let table = document.createElement('table');
+    table.setAttribute('id', 'mouse_table')
+    for (let i=0; i<data.length; i++) {
+      if (i==0 || data[i][5] == "妊娠" || data[i][5] == "仔育て"){
+        let tr = document.createElement('tr');
+        if (i==0) {
+          let tdbutton = document.createElement('td');
+          tdbutton.innerHTML = "選択";
+          tr.appendChild(tdbutton);
+        } else {
+          let tdbutton = document.createElement('td');
+          let radio = document.createElement('input');
+          radio.setAttribute('type', 'radio');
+          radio.setAttribute('name', 'radio');
+          radio.setAttribute('id', i);
+          tdbutton.appendChild(radio);
+          tr.appendChild(tdbutton);
+        }
+        for (let j=0; j<data[i].length; j++) {
+          if (i==0){
+            let th = document.createElement('th');
+            th.textContent = data[i][j];
+            tr.appendChild(th);
+          } else {
+            let td = document.createElement('td');
+            td.textContent = data[i][j];
+            tr.appendChild(td);
+          }
+        }
+        table.appendChild(tr);
+      }
+    }
+    main_table.appendChild(table);
+  }
+   
+  function input_to_sheet() {
+    let row = 0
+    let radio_all = document.getElementsByName("radio");
+    for (let i = 0; i < radio_all.length; i++){
+      if (radio_all[i].checked == true){
+        row = i + 1;
+        break;
+      }
+    }
+    if (row == 0) {
+      alert("マウスを選んでください");
+      return;
+    }
+    let prefix = mouse_table.rows[row].cells[4].innerHTML;
+    let list = ["female", "male"];
+    let value = [];
+    let born_date = Number(document.getElementById('date').value);
+    for (let i=0; i < list.length; i++) {
+      value.push(document.getElementById(list[i]).value);
+    }
+    google.script.run.input_to_sheet_gs(value, born_date, prefix);
+    alert("スプレッドシートに入力しました！");
+    window.top.location.href= newUrl + '?page=result';
+  }
+  
+  //selectの要素内に0から10までの選択肢を作成する関数。
+  function add_options() {
+    let list = ["female", "male"];
+    for (let i = 0; i < list.length; i++) {
+      let select = document.getElementById(list[i]);
+      for (let j = 0; j <= 10; j++) {
+        let option = document.createElement('option');
+        option.setAttribute('value', j);
+        option.innerHTML = j;
+        select.appendChild(option);
+      }
+    }
+  }
+  
+  google.script.run.withSuccessHandler(function(url){newUrl = url;}).getScriptUrl();
+  window.addEventListener('DOMContentLoaded', loadsheet());
+  window.addEventListener('DOMContentLoaded', add_options());
+</script>

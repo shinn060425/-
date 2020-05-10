@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Document</title>
+    <base target="_top" />
+    <?!= include('css'); ?>
+    <?let url = getScriptUrl();?>
+  </head>
+  <body>
+    <h1>マウス管理フォーム</h1>
+    メスの匹数
+    <select id="female">
+    </select>
+    <br>
+    オスの匹数
+    <select id="male">
+    </select>
+    <br>
+    <select id="date">
+      <option value="0" selected>今日</option>
+      <option value="1">昨日</option>
+      <option value="2">2日前</option>
+      <option value="3">3日前</option>
+      <option value="4">4日前</option>
+      <option value="5">5日前</option>
+      <option value="6">6日前</option>
+      <option value="7">7日前</option>
+    </select>
+    <br>
+    母マウス
+    <div id="main_table">
+    </div>
+    <br>
+    <button onclick="input_to_sheet();">送信する</button>
+    <?!= include('js_born'); ?>
+  </body>
+</html>
+

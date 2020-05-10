@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Document</title>
+    <base target="_top" />
+    <?!= include('css'); ?>
+    <?let url = getScriptUrl();?>
+  </head>
+  <body>
+    <h1>マウス管理フォーム</h1>
+    仔分けしたマウス
+    <div id="main_table">
+    </div>
+    <br>
+    匹数の変更
+    <div id="change_form">
+      <!---type=numberを使う方法は"https://developer.mozilla.org/ja/docs/Web/HTML/Element/Input/number"を参考にした。--->
+      <label for="input_1_1">メス：</label>
+      <input type="number" name="input_1" id="input_1_1" max="30" min="0">
+      <label for="input_1_2">オス：</label>
+      <input type="number" name="input_1" id="input_1_2" max="30" min="0">
+    </div>
+    <br>
+    間引き
+    <div id="thinning_form">
+      <label for="input_2_1">メス：</label>
+      <input type="number" name="input_2" id="input_2_1" max="30" min="0">
+      <label for="input_2_2">オス：</label>
+      <input type="number" name="input_2" id="input_2_2" max="30" min="0">
+    </div>
+    <br>
+    <button id="submit" onclick="discrimination_on_sheet();">送信する</button>
+    <?!= include('js_discrimination'); ?>
+  </body>
+</html>

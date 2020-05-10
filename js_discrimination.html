@@ -1,0 +1,105 @@
+<script>
+  //スプレッドシートの値をselectの要素に導入する関数。"https://qiita.com/non-programmer/items/e822dbeb7b3ab6e403b3"を参考にした。
+  function loadsheet() {
+    let sheetname = "仔分け前";
+    //.gs内のloading()を呼び出し、読み込み後にListBack()でselect要素に選択肢を設定します。
+    google.script.run.withSuccessHandler(ListBack).loading(sheetname);
+  }
+ 
+  //リスト読み込み
+  function ListBack(data) {
+    let main_table = document.getElementById('main_table');
+    //選択を変えたときに前回の情報が残らないようにする
+    while (main_table.firstChild) {
+      main_table.removeChild(main_table.firstChild);
+    }
+    let table = document.createElement('table');
+    table.setAttribute('id', 'mouse_table')
+    for (let i=0; i<data.length; i++) {
+      let tr = document.createElement('tr');
+      if (i==0) {
+        let tdbutton = document.createElement('td');
+        tdbutton.innerHTML = "選択";
+        tr.appendChild(tdbutton);
+      } else {
+        let tdbutton = document.createElement('td');
+        let radio = document.createElement('input');
+        radio.setAttribute('type', 'radio');
+        radio.setAttribute('name', 'radio');
+        radio.setAttribute('id', i);
+        radio.onclick = function(){change();};
+        tdbutton.appendChild(radio);
+        tr.appendChild(tdbutton);
+      }
+      for (let j=0; j<data[i].length; j++) {
+        if (i==0){
+          let th = document.createElement('th');
+          th.textContent = data[i][j];
+          tr.appendChild(th);
+        } else {
+          let td = document.createElement('td');
+          td.textContent = data[i][j];
+          tr.appendChild(td);
+        }
+      }
+      table.appendChild(tr);
+    }
+    main_table.appendChild(table);
+  }
+  
+  function change(){
+    //選択されているラジオボタンの値の取得。"https://itsakura.com/js-radiobutton"を参考にした。
+    let radio_all = document.getElementsByName("radio");
+    let female_number = "";
+    let male_number = "";
+    for (let i = 0; i < radio_all.length; i++){
+      if (radio_all[i].checked == true){
+        female_number = mouse_table.rows[i + 1].cells[1].innerHTML;
+        male_number = mouse_table.rows[i + 1].cells[2].innerHTML;
+        break;
+      }
+    }
+    document.getElementById('input_1_1').value = female_number;
+    document.getElementById('input_1_2').value = male_number;
+    document.getElementById('input_2_1').value = "";
+    document.getElementById('input_2_2').value = "";
+  }
+
+  function discrimination_on_sheet() {
+    //選択されているラジオボタンのrowを受け取る
+    let row = 0
+    let radio_all = document.getElementsByName("radio");
+    for (let i = 0; i < radio_all.length; i++){
+      if (radio_all[i].checked == true){
+        row = i + 1;
+        break;
+      }
+    }  
+    if (row == 0) {
+      alert("マウスを選んでください");
+      return;
+    }
+    
+    //最終的な仔分け数の計算[入力するオス, 入力するメス, 屠殺したオス, 屠殺したメス]
+    let slaughter_female = Number(document.getElementById("input_2_1").value);
+    let slaughter_male = Number(document.getElementById("input_2_2").value);
+    let input_female = Number(document.getElementById("input_1_1").value) - slaughter_female;
+    let input_male = Number(document.getElementById("input_1_2").value) - slaughter_male;
+    
+    if (input_female < 0 || input_male < 0) {
+      alert("屠殺する匹数が多すぎます。");
+      return;
+    }
+    
+    let input = [input_female ,input_male ,slaughter_female ,slaughter_male];
+    
+    let prefix = mouse_table.rows[row].cells[5].innerHTML;
+    //change_of_sheet_gsに(変更する匹数、選択されているラジオボタンの行数、交配メスのprefix)を投げる
+    google.script.run.discrimination_on_sheet_gs(input, row, prefix);
+    alert("スプレッドシートを変更しました！");
+    window.top.location.href= newUrl + '?page=result';
+  }
+  
+  google.script.run.withSuccessHandler(function(url){newUrl = url;}).getScriptUrl();
+  window.addEventListener('DOMContentLoaded', loadsheet());
+</script>

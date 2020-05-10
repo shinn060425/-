@@ -1,0 +1,101 @@
+<script>
+  //スプレッドシートの値をselectの要素に導入する関数。"https://qiita.com/non-programmer/items/e822dbeb7b3ab6e403b3"を参考にした。
+  function loadsheet() {
+    let sheetname = document.getElementById("sheetname").value;
+    //.gs内のloading()を呼び出し、読み込み後にListBack()でselect要素に選択肢を設定します。
+    google.script.run.withSuccessHandler(ListBack).loading(sheetname);
+  }
+ 
+  //リスト読み込み
+  function ListBack(data) {
+    let list = document.getElementById('main_table');
+    //選択を変えたときに前回の情報が残らないようにする
+    while (list.firstChild) {
+      list.removeChild(list.firstChild);
+    }
+    let table = document.createElement('table');
+    table.setAttribute('id', 'mouse_table')
+    for (let i=0; i<data.length; i++) {
+      let tr = document.createElement('tr');
+      if (i==0) {
+        let tdbutton = document.createElement('td');
+        tdbutton.innerHTML = "追加";
+        let tdcounter = document.createElement('td');
+        tdcounter.innerHTML = "使用数";
+        tr.appendChild(tdbutton);
+        tr.appendChild(tdcounter);
+      } else {
+        let tdbutton = document.createElement('td');
+        let tdcounter = document.createElement('td');
+        tdcounter.innerHTML = "";
+        let button = document.createElement('button');
+        button.setAttribute('id', i);
+        //ボタンを押したときにcount()に因数を投げて実行。"https://okwave.jp/qa/q2370482.html"を参考にした。
+        button.onclick = function(){count(this.id);};
+        tdbutton.appendChild(button);
+        tr.appendChild(tdbutton);
+        tr.appendChild(tdcounter);
+      }
+      for (let j=0; j<data[i].length; j++) {
+        if (i==0){
+          let th = document.createElement('th');
+          th.textContent = data[i][j];
+          tr.appendChild(th);
+        } else {
+          let td = document.createElement('td');
+          td.textContent = data[i][j];
+          tr.appendChild(td);
+        }
+      }
+      table.appendChild(tr);
+    }
+    list.appendChild(table);
+  }
+  
+  function count(row){
+    //tableの制御の仕方は"https://webparts.cman.jp/table/rewrite/"を参考にした。
+    let num = Number(mouse_table.rows[row].cells[1].innerHTML);
+    let maxnum = Number(mouse_table.rows[row].cells[2].innerHTML);
+    if (num === "") {
+      mouse_table.rows[row].cells[1].innerHTML = 1;
+    } else if (num < maxnum) {
+      num++;
+      mouse_table.rows[row].cells[1].innerHTML = num;
+    } else{
+      mouse_table.rows[row].cells[1].innerHTML = "";
+    }
+  }
+
+  function delete_from_sheet() {
+    let sheetname = document.getElementById("sheetname").value;
+    let experiment = document.getElementById("experiment").value;
+    let row_length = mouse_table.rows.length;
+    let col_length = mouse_table.rows[0].cells.length;
+    let arr = [];
+    let numall = 0;
+    for (let i=1; i < row_length; i++) {
+      let num = Number(mouse_table.rows[i].cells[1].innerHTML);
+      arr.push(num);
+      numall = numall + Number(num);
+    }
+    //空欄があればalertを出す
+    if (numall == 0 || experiment == "") {
+      alert("空欄があります");
+      return;
+    }
+    //空欄の列はスキップし、delete_from_sheet_gsにデータを渡す
+    //複数行入力のために、番号をつける
+    let k = 0
+    for (let j=0; j < arr.length; j++) {
+      if (arr[j] != "") {
+      google.script.run.delete_from_sheet_gs(sheetname, arr[j], experiment, j, k);
+      k++;
+      }
+    }
+    alert("スプレッドシートから削除しました！");
+    window.top.location.href= newUrl + '?page=result';
+  }
+  
+  google.script.run.withSuccessHandler(function(url){newUrl = url;}).getScriptUrl();
+  window.addEventListener('DOMContentLoaded', loadsheet());
+</script>
