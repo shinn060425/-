@@ -67,9 +67,12 @@
     for (let i=0; i < list.length; i++) {
       value.push(document.getElementById(list[i]).value);
     }
-    google.script.run.input_to_sheet_gs(value, born_date, prefix);
-    alert("スプレッドシートに入力しました！");
-    window.top.location.href= newUrl + '?page=result';
+    google.script.run.withSuccessHandler(function(){
+      alert("スプレッドシートに入力しました！");
+      loadsheet();
+    }).withFailureHandler(function(){
+      alert("入力に失敗しました");
+    }).input_to_sheet_gs(value, born_date, prefix);
   }
   
   //selectの要素内に0から10までの選択肢を作成する関数。
@@ -85,8 +88,7 @@
       }
     }
   }
-  
-  google.script.run.withSuccessHandler(function(url){newUrl = url;}).getScriptUrl();
+
   window.addEventListener('DOMContentLoaded', loadsheet());
   window.addEventListener('DOMContentLoaded', add_options());
 </script>

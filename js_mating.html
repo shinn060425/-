@@ -136,11 +136,13 @@
     let female_prefix = mouse_table1.rows[row1].cells[4].innerHTML;
     let male_prefix = mouse_table2.rows[row2].cells[4].innerHTML;
     //mating_on_sheet_gsに(start or finish、交配メスのprefix、交配オスのprefix)を投げる
-    google.script.run.mating_on_sheet_gs(which_mating, female_prefix, male_prefix);
-    alert("スプレッドシートを変更しました！");
-    window.top.location.href= newUrl + '?page=result';
+    google.script.run.withSuccessHandler(function(){
+      alert("スプレッドシートに入力しました！");
+      loadsheet();
+    }).withFailureHandler(function(){
+      alert("入力に失敗しました");
+    }).mating_on_sheet_gs(which_mating, female_prefix, male_prefix);
   }
-  
-  google.script.run.withSuccessHandler(function(url){newUrl = url;}).getScriptUrl();
+
   window.addEventListener('DOMContentLoaded', loadsheet());
 </script>

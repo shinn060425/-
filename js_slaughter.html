@@ -88,14 +88,16 @@
     let k = 0
     for (let j=0; j < arr.length; j++) {
       if (arr[j] != "") {
-      google.script.run.delete_from_sheet_gs(sheetname, arr[j], experiment, j, k);
+      google.script.run.withSuccessHandler(function(){
+        alert("スプレッドシートに入力しました！");
+        loadsheet();
+      }).withFailureHandler(function(){
+        alert("入力に失敗しました");
+      }).delete_from_sheet_gs(sheetname, arr[j], experiment, j, k);
       k++;
       }
     }
-    alert("スプレッドシートから削除しました！");
-    window.top.location.href= newUrl + '?page=result';
   }
   
-  google.script.run.withSuccessHandler(function(url){newUrl = url;}).getScriptUrl();
   window.addEventListener('DOMContentLoaded', loadsheet());
 </script>
