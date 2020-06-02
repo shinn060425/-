@@ -185,10 +185,12 @@ function mating_on_sheet_gs(which_mating, mo_prefix, fa_prefix) {
   for (let j=0; j < lastrow_mo - 1; j++) {
     if (prefix_list_mo[j][0] == mo_prefix) {
       shmo.getRange(j + 2, 6).setValue(which_cond_mo);
-      shmo.getRange(j + 2, 8).setValue(fa_prefix);
-      num_mo = shmo.getRange(j + 2, 1).getValue();
-      let num_all_mo = shmo.getRange(j + 2, 8).getValue();
-      shmo.getRange(j + 2, 8).setValue(num_all_mo + num_mo);
+      if (which_mating == "start") {
+        num_mo = shmo.getRange(j + 2, 1).getValue();
+        let num_all_mo = shmo.getRange(j + 2, 8).getValue();
+        shmo.getRange(j + 2, 8).setValue(num_all_mo + num_mo);
+        shmo.getRange(j + 2, 9).setValue(fa_prefix);
+      }
     }
   }
   let lastrow_fa = shfa.getLastRow();
@@ -196,8 +198,10 @@ function mating_on_sheet_gs(which_mating, mo_prefix, fa_prefix) {
   for (let j=0; j < lastrow_fa - 1; j++) {
     if (prefix_list_fa[j][0] == fa_prefix) {
       shfa.getRange(j + 2, 6).setValue(which_cond_fa);
-      let num_all_fa = shfa.getRange(j + 2, 8).getValue();
-      shfa.getRange(j + 2, 8).setValue(num_all_fa + num_mo);
+      if (which_mating == "start") {
+        let num_all_fa = shfa.getRange(j + 2, 8).getValue();
+        shfa.getRange(j + 2, 8).setValue(num_all_fa + num_mo);
+      }
     }
   }
 }
