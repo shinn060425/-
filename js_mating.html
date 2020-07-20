@@ -134,15 +134,13 @@
     let which_mating = document.getElementById("which_mating").value;
     
     //mating_on_sheet_gsに(start or finish、交配メスのprefix、交配オスのprefix)を投げる
-    for (let i = 0; i < row1.length; i++){
-      google.script.run.withSuccessHandler(function(){
-        alert("スプレッドシートに入力しました！");
-        loadsheet();
-      }).withFailureHandler(function(){
-        alert("入力に失敗しました");
-      }).mating_on_sheet_gs(which_mating, female_prefix[i], male_prefix);
-    } 
-  }
+    google.script.run.withSuccessHandler(function(){
+      alert("スプレッドシートに入力しました！");
+      loadsheet();
+    }).withFailureHandler(function(){
+      alert("入力に失敗しました");
+    }).mating_on_sheet_gs(which_mating, female_prefix, male_prefix);
+  } 
 
   window.addEventListener('DOMContentLoaded', loadsheet());
 </script>

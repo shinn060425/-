@@ -179,28 +179,30 @@ function mating_on_sheet_gs(which_mating, mo_prefix, fa_prefix) {
     }
   
   //prefixからそれぞれのシートの「現在の状況」、「全交配数」を書き変える。同時に、「交配メス」シートに交配相手のprefixを追記する。
-  let lastrow_mo = shmo.getLastRow();
-  let prefix_list_mo = shmo.getRange(2, 4, lastrow_mo - 1, 1).getValues();
-  let num_mo = 0;
-  for (let j=0; j < lastrow_mo - 1; j++) {
-    if (prefix_list_mo[j][0] == mo_prefix) {
-      shmo.getRange(j + 2, 6).setValue(which_cond_mo);
-      if (which_mating == "start") {
-        num_mo = shmo.getRange(j + 2, 1).getValue();
-        let num_all_mo = shmo.getRange(j + 2, 8).getValue();
-        shmo.getRange(j + 2, 8).setValue(num_all_mo + num_mo);
-        shmo.getRange(j + 2, 9).setValue(fa_prefix);
+  for (let i = 0; i < mo_prefix.length; i++){
+    let lastrow_mo = shmo.getLastRow();
+    let prefix_list_mo = shmo.getRange(2, 4, lastrow_mo - 1, 1).getValues();
+    let num_mo = 0;
+    for (let j=0; j < lastrow_mo - 1; j++) {
+      if (prefix_list_mo[j][0] == mo_prefix[i]) {
+        shmo.getRange(j + 2, 6).setValue(which_cond_mo);
+        if (which_mating == "start") {
+          num_mo = shmo.getRange(j + 2, 1).getValue();
+          let num_all_mo = shmo.getRange(j + 2, 8).getValue();
+          shmo.getRange(j + 2, 8).setValue(num_all_mo + num_mo);
+          shmo.getRange(j + 2, 9).setValue(fa_prefix);
+        }
       }
     }
-  }
-  let lastrow_fa = shfa.getLastRow();
-  let prefix_list_fa = shfa.getRange(2, 4, lastrow_fa - 1, 1).getValues();
-  for (let j=0; j < lastrow_fa - 1; j++) {
-    if (prefix_list_fa[j][0] == fa_prefix) {
-      shfa.getRange(j + 2, 6).setValue(which_cond_fa);
-      if (which_mating == "start") {
-        let num_all_fa = shfa.getRange(j + 2, 8).getValue();
-        shfa.getRange(j + 2, 8).setValue(num_all_fa + num_mo);
+    let lastrow_fa = shfa.getLastRow();
+    let prefix_list_fa = shfa.getRange(2, 4, lastrow_fa - 1, 1).getValues();
+    for (let j=0; j < lastrow_fa - 1; j++) {
+      if (prefix_list_fa[j][0] == fa_prefix) {
+        shfa.getRange(j + 2, 6).setValue(which_cond_fa);
+        if (which_mating == "start") {
+          let num_all_fa = shfa.getRange(j + 2, 8).getValue();
+          shfa.getRange(j + 2, 8).setValue(num_all_fa + num_mo);
+        }
       }
     }
   }
