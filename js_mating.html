@@ -33,14 +33,11 @@
           tr.appendChild(tdbutton);
         } else {
           let tdbutton = document.createElement('td');
-          let radio = document.createElement('input');
-          radio.setAttribute('type', 'radio');
-          radio.setAttribute('name', 'radio1');
-          radio.setAttribute('id', i);
-          if (k==1) {
-            radio.setAttribute('checked', 'checked');
-          }
-          tdbutton.appendChild(radio);
+          let checkbox = document.createElement('input');
+          checkbox.setAttribute('type', 'checkbox');
+          checkbox.setAttribute('name', 'checkbox');
+          checkbox.setAttribute('id', i);
+          tdbutton.appendChild(checkbox);
           tr.appendChild(tdbutton);
         }
         for (let j=0; j<data[i].length; j++) {
@@ -87,7 +84,7 @@
           let tdbutton = document.createElement('td');
           let radio = document.createElement('input');
           radio.setAttribute('type', 'radio');
-          radio.setAttribute('name', 'radio2');
+          radio.setAttribute('name', 'radio');
           radio.setAttribute('id', i);
           if (k==1) {
             radio.setAttribute('checked', 'checked')
@@ -115,33 +112,36 @@
   
   function mating_on_sheet() {
     //選択されているラジオボタンのrowを受け取る
-    let row1 = 0
-    let radio1_all = document.getElementsByName("radio1");
-    for (let i = 0; i < radio1_all.length; i++){
-      if (radio1_all[i].checked == true){
-        row1 = i + 1;
-        break;
+    let female_prefix = [];
+    let row1 = [];
+    let checkbox_all = document.getElementsByName("checkbox");
+    for (let i = 0; i < checkbox_all.length; i++){
+      if (checkbox_all[i].checked == true){
+        row1.push(i + 1);
+        female_prefix.push(mouse_table1.rows[i + 1].cells[4].innerHTML);
       }
     }
-    let row2 = 0
-    let radio2_all = document.getElementsByName("radio2");
-    for (let i = 0; i < radio2_all.length; i++){
-      if (radio2_all[i].checked == true){
+    let male_prefix = 0;
+    let row2 = 0;
+    let radio_all = document.getElementsByName("radio");
+    for (let i = 0; i < radio_all.length; i++){
+      if (radio_all[i].checked == true){
         row2 = i + 1;
+        male_prefix = mouse_table2.rows[row2].cells[4].innerHTML;
         break;
       }
     }
     let which_mating = document.getElementById("which_mating").value;
     
-    let female_prefix = mouse_table1.rows[row1].cells[4].innerHTML;
-    let male_prefix = mouse_table2.rows[row2].cells[4].innerHTML;
     //mating_on_sheet_gsに(start or finish、交配メスのprefix、交配オスのprefix)を投げる
-    google.script.run.withSuccessHandler(function(){
-      alert("スプレッドシートに入力しました！");
-      loadsheet();
-    }).withFailureHandler(function(){
-      alert("入力に失敗しました");
-    }).mating_on_sheet_gs(which_mating, female_prefix, male_prefix);
+    for (let i = 0; i < row1.length; i++){
+      google.script.run.withSuccessHandler(function(){
+        alert("スプレッドシートに入力しました！");
+        loadsheet();
+      }).withFailureHandler(function(){
+        alert("入力に失敗しました");
+      }).mating_on_sheet_gs(which_mating, female_prefix[i], male_prefix);
+    } 
   }
 
   window.addEventListener('DOMContentLoaded', loadsheet());
