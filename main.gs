@@ -1,4 +1,4 @@
-let id = "1HuaAdg-xdo6n_JJXCYgyzD8bAHjl09ngtJbVwF8SXNw";
+let sheet_id = "1HuaAdg-xdo6n_JJXCYgyzD8bAHjl09ngtJbVwF8SXNw";
 
 // htmlからhtmlへの遷移用。"https://surleconomiejp.blogspot.com/2017/02/google-apps-script-htmlhtml.html"を参考にした。
 function doGet(e) {
@@ -26,7 +26,7 @@ function include(filename) {
 
 //スプレッドシートのデータを格納。"https://qiita.com/non-programmer/items/e822dbeb7b3ab6e403b3"を参考にした。
 function loading(sheetname) {
-  let ss = SpreadsheetApp.openById(id);
+  let ss = SpreadsheetApp.openById(sheet_id);
   let sh = ss.getSheetByName(sheetname);
   //最終行・列を調べる
   let lastrow = sh.getLastRow();
@@ -50,7 +50,7 @@ function loading(sheetname) {
 function delete_from_sheet_gs(sheetname, value, experiment, num, k) {
   let nowtime = new Date();
   let time = new Date(nowtime.getFullYear(), nowtime.getMonth(), nowtime.getDate());
-  let ss = SpreadsheetApp.openById(id);
+  let ss = SpreadsheetApp.openById(sheet_id);
   let sh = ss.getSheetByName(sheetname);
   let shdel = ss.getSheetByName("処分マウス");
   let shdelrow = shdel.getLastRow() + 1 + k; //複数行入力の際、処理時間がほぼ同値のためlastrowがかぶってしまうことの一時的な解決。
@@ -73,27 +73,27 @@ function delete_from_sheet_gs(sheetname, value, experiment, num, k) {
 }
 
 // 生まれたときにspreadsheetにhtmlから直接書き込むための関数。"https://www.pre-practice.net/2017/10/web.html"を参考にした。
-function input_to_sheet_gs(value, born_date, mo_prefix, fa_prefix) {
+function input_to_sheet_gs(value, born_date, mo_ID, fa_ID) {
   
   //日付の足し算は"https://qiita.com/pppolon/items/b58f05b7534fe4b8ec72"を参考にした。
   let nowtime = new Date();
   let time = new Date(nowtime.getFullYear(), nowtime.getMonth(), nowtime.getDate() - born_date);
   
-  let ss = SpreadsheetApp.openById(id);
+  let ss = SpreadsheetApp.openById(sheet_id);
   let sh = ss.getSheetByName("仔分け前");
   let shmo = ss.getSheetByName("交配メス");
   let shfa = ss.getSheetByName("交配オス");
   
   let lastRow = sh.getLastRow() + 1;
-  sh.getRange(lastRow, 1, 1, 6).setValues([[value[0], value[1], time, , mo_prefix, fa_prefix]]);
+  sh.getRange(lastRow, 1, 1, 6).setValues([[value[0], value[1], time, , mo_ID, fa_ID]]);
   sh.getRange(lastRow, 4).setFormulaR1C1("=ROUNDDOWN((TODAY()-R" + lastRow + "C3)/7)");
   
-  //母マウスのprefixから「交配メス」シート内での行数を調べ、母マウスの状態、交配成績を変更。
+  //母マウスのIDから「交配メス」シート内での行数を調べ、母マウスの状態、交配成績を変更。
   let row = 0;
   let lastrow_mo = shmo.getLastRow();
-  let prefix_list_mo = shmo.getRange(2, 4, lastrow_mo - 1, 1).getValues();
+  let ID_list_mo = shmo.getRange(2, 4, lastrow_mo - 1, 1).getValues();
   for (let j=0; j < lastrow_mo - 1; j++) {
-    if (prefix_list_mo[j][0] == mo_prefix) {
+    if (ID_list_mo[j][0] == mo_ID) {
       shmo.getRange(j + 2, 6).setValue("仔育て");
       let mating_num_mo = shmo.getRange(j + 2, 7).getValue();
       shmo.getRange(j + 2, 7).setValue(mating_num_mo + 1);
@@ -102,9 +102,9 @@ function input_to_sheet_gs(value, born_date, mo_prefix, fa_prefix) {
   
   //同様に父マウスの交配成績を変更。
   let lastrow_fa = shfa.getLastRow();
-  let prefix_list_fa = shfa.getRange(2, 4, lastrow_fa - 1, 1).getValues();
+  let ID_list_fa = shfa.getRange(2, 4, lastrow_fa - 1, 1).getValues();
   for (let j=0; j < lastrow_fa - 1; j++) {
-    if (prefix_list_fa[j][0] == fa_prefix) {
+    if (ID_list_fa[j][0] == fa_ID) {
       let mating_num_fa = shfa.getRange(j + 2, 7).getValue();
       shfa.getRange(j + 2, 7).setValue(mating_num_fa + 1);
     }
@@ -112,10 +112,10 @@ function input_to_sheet_gs(value, born_date, mo_prefix, fa_prefix) {
 }
 
 // 仔分け時にスプレッドシートを変更するための関数。
-function discrimination_on_sheet_gs(input, num, mo_prefix, fa_prefix) {
+function discrimination_on_sheet_gs(input, num, mo_ID, fa_ID) {
   let nowtime = new Date();
   let time = new Date(nowtime.getFullYear(), nowtime.getMonth(), nowtime.getDate());
-  let ss = SpreadsheetApp.openById(id);
+  let ss = SpreadsheetApp.openById(sheet_id);
   let sh = ss.getSheetByName("仔分け前");
   let shdel = ss.getSheetByName("処分マウス");
   let shdelrow = shdel.getLastRow() + 1;
@@ -132,7 +132,7 @@ function discrimination_on_sheet_gs(input, num, mo_prefix, fa_prefix) {
       let shsexrow = shsex.getLastRow() + 1;
       shsex.getRange(shsexrow, 1, 1, 2).setValues([[input[k], date]]);
       shsex.getRange(shsexrow, 3).setFormulaR1C1("=ROUNDDOWN((TODAY()-R" + shsexrow + "C2)/7)");
-      shsex.getRange(shsexrow, 4, 1, 2).setValues([[mo_prefix, fa_prefix]]);
+      shsex.getRange(shsexrow, 4, 1, 2).setValues([[mo_ID, fa_ID]]);
     }
     //処分マウスシートに書き込み
     if (input[k + 2] > 0) {
@@ -145,12 +145,12 @@ function discrimination_on_sheet_gs(input, num, mo_prefix, fa_prefix) {
     }
   }
   
-  //prefixから母親の状態を変更。
+  //IDから母親の状態を変更。
   let shmo = ss.getSheetByName("交配メス");
   let lastrow_mo = shmo.getLastRow();
-  let prefix_list = shmo.getRange(2, 4, lastrow_mo - 1, 1).getValues();
+  let ID_list = shmo.getRange(2, 4, lastrow_mo - 1, 1).getValues();
   for (let j=0; j < lastrow_mo - 1; j++) {
-    if (prefix_list[j][0] == mo_prefix) {
+    if (ID_list[j][0] == mo_ID) {
       shmo.getRange(j + 2, 6).setValue("休憩");
     }
   }
@@ -159,8 +159,8 @@ function discrimination_on_sheet_gs(input, num, mo_prefix, fa_prefix) {
   sh.deleteRows(row);
 }
 
-function mating_on_sheet_gs(which_mating, mo_prefix, fa_prefix) {
-  let ss = SpreadsheetApp.openById(id);
+function mating_on_sheet_gs(which_mating, mo_ID, fa_ID) {
+  let ss = SpreadsheetApp.openById(sheet_id);
   let shmo = ss.getSheetByName("交配メス");
   let shfa = ss.getSheetByName("交配オス");
   
@@ -175,26 +175,26 @@ function mating_on_sheet_gs(which_mating, mo_prefix, fa_prefix) {
       which_cond_fa = "休憩";
     }
   
-  //prefixからそれぞれのシートの「現在の状況」、「全交配数」を書き変える。同時に、「交配メス」シートに交配相手のprefixを追記する。
-  for (let i = 0; i < mo_prefix.length; i++){
+  //IDからそれぞれのシートの「現在の状況」、「全交配数」を書き変える。同時に、「交配メス」シートに交配相手のIDを追記する。
+  for (let i = 0; i < mo_ID.length; i++){
     let lastrow_mo = shmo.getLastRow();
-    let prefix_list_mo = shmo.getRange(2, 4, lastrow_mo - 1, 1).getValues();
+    let ID_list_mo = shmo.getRange(2, 4, lastrow_mo - 1, 1).getValues();
     let num_mo = 0;
     for (let j=0; j < lastrow_mo - 1; j++) {
-      if (prefix_list_mo[j][0] == mo_prefix[i]) {
+      if (ID_list_mo[j][0] == mo_ID[i]) {
         shmo.getRange(j + 2, 6).setValue(which_cond_mo);
         if (which_mating == "start") {
           num_mo = shmo.getRange(j + 2, 1).getValue();
           let num_all_mo = shmo.getRange(j + 2, 8).getValue();
           shmo.getRange(j + 2, 8).setValue(num_all_mo + num_mo);
-          shmo.getRange(j + 2, 9).setValue(fa_prefix);
+          shmo.getRange(j + 2, 9).setValue(fa_ID);
         }
       }
     }
     let lastrow_fa = shfa.getLastRow();
-    let prefix_list_fa = shfa.getRange(2, 4, lastrow_fa - 1, 1).getValues();
+    let ID_list_fa = shfa.getRange(2, 4, lastrow_fa - 1, 1).getValues();
     for (let j=0; j < lastrow_fa - 1; j++) {
-      if (prefix_list_fa[j][0] == fa_prefix) {
+      if (ID_list_fa[j][0] == fa_ID) {
         shfa.getRange(j + 2, 6).setValue(which_cond_fa);
         if (which_mating == "start") {
           let num_all_fa = shfa.getRange(j + 2, 8).getValue();

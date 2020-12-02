@@ -112,34 +112,34 @@
   
   function mating_on_sheet() {
     //選択されているラジオボタンのrowを受け取る
-    let female_prefix = [];
+    let female_ID = [];
     let row1 = [];
     let checkbox_all = document.getElementsByName("checkbox");
     for (let i = 0; i < checkbox_all.length; i++){
       if (checkbox_all[i].checked == true){
         row1.push(i + 1);
-        female_prefix.push(mouse_table1.rows[i + 1].cells[4].innerHTML);
+        female_ID.push(mouse_table1.rows[i + 1].cells[4].innerHTML);
       }
     }
-    let male_prefix = 0;
+    let male_ID = 0;
     let row2 = 0;
     let radio_all = document.getElementsByName("radio");
     for (let i = 0; i < radio_all.length; i++){
       if (radio_all[i].checked == true){
         row2 = i + 1;
-        male_prefix = mouse_table2.rows[row2].cells[4].innerHTML;
+        male_ID = mouse_table2.rows[row2].cells[4].innerHTML;
         break;
       }
     }
     let which_mating = document.getElementById("which_mating").value;
     
-    //mating_on_sheet_gsに(start or finish、交配メスのprefix、交配オスのprefix)を投げる
+    //mating_on_sheet_gsに(start or finish、交配メスのID、交配オスのID)を投げる
     google.script.run.withSuccessHandler(function(){
       alert("スプレッドシートに入力しました！");
       loadsheet();
     }).withFailureHandler(function(){
       alert("入力に失敗しました");
-    }).mating_on_sheet_gs(which_mating, female_prefix, male_prefix);
+    }).mating_on_sheet_gs(which_mating, female_ID, male_ID);
   } 
 
   window.addEventListener('DOMContentLoaded', loadsheet());
