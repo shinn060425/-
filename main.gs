@@ -74,15 +74,14 @@ function delete_from_sheet_gs(sheetname, value, experiment, num, k) {
 
 // 生まれたときにspreadsheetにhtmlから直接書き込むための関数。"https://www.pre-practice.net/2017/10/web.html"を参考にした。
 function input_to_sheet_gs(value, born_date, mo_ID, fa_ID) {
-  
-  //日付の足し算は"https://qiita.com/pppolon/items/b58f05b7534fe4b8ec72"を参考にした。
-  let nowtime = new Date();
-  let time = new Date(nowtime.getFullYear(), nowtime.getMonth(), nowtime.getDate() - born_date);
-  
   let ss = SpreadsheetApp.openById(sheet_id);
   let sh = ss.getSheetByName("仔分け前");
   let shmo = ss.getSheetByName("交配メス");
   let shfa = ss.getSheetByName("交配オス");
+
+  //日付の足し算は"https://qiita.com/pppolon/items/b58f05b7534fe4b8ec72"を参考にした。
+  let nowtime = new Date();
+  let time = new Date(nowtime.getFullYear(), nowtime.getMonth(), nowtime.getDate() - born_date);
   
   let lastRow = sh.getLastRow() + 1;
   sh.getRange(lastRow, 1, 1, 6).setValues([[value[0], value[1], time, , mo_ID, fa_ID]]);
@@ -107,6 +106,20 @@ function input_to_sheet_gs(value, born_date, mo_ID, fa_ID) {
     if (ID_list_fa[j][0] == fa_ID) {
       let mating_num_fa = shfa.getRange(j + 2, 7).getValue();
       shfa.getRange(j + 2, 7).setValue(mating_num_fa + 1);
+    }
+  }
+}
+
+// 生まれた数が0だった(妊娠していなかった)時のための関数。
+function no_birth_on_sheet_gs(mo_ID) {
+  let ss = SpreadsheetApp.openById(sheet_id);
+  let shmo = ss.getSheetByName("交配メス");
+  let row = 0;
+  let lastrow_mo = shmo.getLastRow();
+  let ID_list_mo = shmo.getRange(2, 4, lastrow_mo - 1, 1).getValues();
+  for (let j=0; j < lastrow_mo - 1; j++) {
+    if (ID_list_mo[j][0] == mo_ID) {
+      shmo.getRange(j + 2, 6).setValue("休憩");
     }
   }
 }

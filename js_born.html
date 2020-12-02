@@ -68,12 +68,23 @@
     for (let i=0; i < list.length; i++) {
       value.push(document.getElementById(list[i]).value);
     }
-    google.script.run.withSuccessHandler(function(){
-      alert("スプレッドシートに入力しました！");
-      loadsheet();
-    }).withFailureHandler(function(){
-      alert("入力に失敗しました");
-    }).input_to_sheet_gs(value, born_date, mo_ID, fa_ID);
+    
+    //生まれた数がオスメスともに0であれば、交配メスの状態のみを「妊娠」→「休憩」にする。
+    if (value[0] == 0 && value[1] == 0) {
+      google.script.run.withSuccessHandler(function(){
+        alert("生まれた数の入力が0でした。交配メスマウスは「休憩」になりました。");
+        loadsheet();
+      }).withFailureHandler(function(){
+        alert("入力に失敗しました");
+      }).no_birth_on_sheet_gs(mo_ID);
+    } else {
+      google.script.run.withSuccessHandler(function(){
+        alert("スプレッドシートに入力しました！");
+        loadsheet();
+      }).withFailureHandler(function(){
+        alert("入力に失敗しました");
+      }).input_to_sheet_gs(value, born_date, mo_ID, fa_ID);
+    }
   }
   
   //selectの要素内に0から10までの選択肢を作成する関数。
