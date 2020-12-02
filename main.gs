@@ -172,7 +172,7 @@ function discrimination_on_sheet_gs(input, num, mo_ID, fa_ID) {
   sh.deleteRows(row);
 }
 
-function mating_on_sheet_gs(which_mating, mo_ID, fa_ID) {
+function mating_on_sheet_gs(which_mating, mo_ID, fa_ID, male_cond_change) {
   let ss = SpreadsheetApp.openById(sheet_id);
   let shmo = ss.getSheetByName("交配メス");
   let shfa = ss.getSheetByName("交配オス");
@@ -208,7 +208,9 @@ function mating_on_sheet_gs(which_mating, mo_ID, fa_ID) {
     let ID_list_fa = shfa.getRange(2, 4, lastrow_fa - 1, 1).getValues();
     for (let j=0; j < lastrow_fa - 1; j++) {
       if (ID_list_fa[j][0] == fa_ID) {
-        shfa.getRange(j + 2, 6).setValue(which_cond_fa);
+        if (male_cond_change != "1"){
+          shfa.getRange(j + 2, 6).setValue(which_cond_fa);
+        }
         if (which_mating == "start") {
           let num_all_fa = shfa.getRange(j + 2, 8).getValue();
           shfa.getRange(j + 2, 8).setValue(num_all_fa + num_mo);
