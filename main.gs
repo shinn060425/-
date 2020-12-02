@@ -172,6 +172,7 @@ function discrimination_on_sheet_gs(input, num, mo_ID, fa_ID) {
   sh.deleteRows(row);
 }
 
+//交配をかけたりかけ終わったりした時にスプレッドシートを変更するための関数。
 function mating_on_sheet_gs(which_mating, mo_ID, fa_ID, male_cond_change) {
   let ss = SpreadsheetApp.openById(sheet_id);
   let shmo = ss.getSheetByName("交配メス");
