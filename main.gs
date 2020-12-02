@@ -73,7 +73,7 @@ function delete_from_sheet_gs(sheetname, value, experiment, num, k) {
 }
 
 // 生まれたときにspreadsheetにhtmlから直接書き込むための関数。"https://www.pre-practice.net/2017/10/web.html"を参考にした。
-function input_to_sheet_gs(value, born_date, mo_prefix) {
+function input_to_sheet_gs(value, born_date, mo_prefix, fa_prefix) {
   
   //日付の足し算は"https://qiita.com/pppolon/items/b58f05b7534fe4b8ec72"を参考にした。
   let nowtime = new Date();
@@ -83,28 +83,24 @@ function input_to_sheet_gs(value, born_date, mo_prefix) {
   let sh = ss.getSheetByName("仔分け前");
   let shmo = ss.getSheetByName("交配メス");
   let shfa = ss.getSheetByName("交配オス");
-   
+  
   let lastRow = sh.getLastRow() + 1;
-  sh.getRange(lastRow, 1, 1, 5).setValues([[value[0], value[1], time, , mo_prefix]]);
+  sh.getRange(lastRow, 1, 1, 6).setValues([[value[0], value[1], time, , mo_prefix, fa_prefix]]);
   sh.getRange(lastRow, 4).setFormulaR1C1("=ROUNDDOWN((TODAY()-R" + lastRow + "C3)/7)");
   
-  //母マウスのprefixから「交配メス」シート内での行数を調べる
+  //母マウスのprefixから「交配メス」シート内での行数を調べ、母マウスの状態、交配成績を変更。
   let row = 0;
   let lastrow_mo = shmo.getLastRow();
   let prefix_list_mo = shmo.getRange(2, 4, lastrow_mo - 1, 1).getValues();
   for (let j=0; j < lastrow_mo - 1; j++) {
     if (prefix_list_mo[j][0] == mo_prefix) {
-      row = j + 2;
+      shmo.getRange(j + 2, 6).setValue("仔育て");
+      let mating_num_mo = shmo.getRange(j + 2, 7).getValue();
+      shmo.getRange(j + 2, 7).setValue(mating_num_mo + 1);
     }
   }
   
-  //母マウスの状態、交配成績を変更。
-  shmo.getRange(row, 6).setValue("仔育て");
-  let mating_num_mo = shmo.getRange(row, 7).getValue();
-  shmo.getRange(row, 7).setValue(mating_num_mo + 1);
-  
-  //父親のprefixを取得し、「交配オス」シートの交配成績を変更。
-  let fa_prefix = shmo.getRange(row, 9).getValue();
+  //同様に父マウスの交配成績を変更。
   let lastrow_fa = shfa.getLastRow();
   let prefix_list_fa = shfa.getRange(2, 4, lastrow_fa - 1, 1).getValues();
   for (let j=0; j < lastrow_fa - 1; j++) {
@@ -116,7 +112,7 @@ function input_to_sheet_gs(value, born_date, mo_prefix) {
 }
 
 // 仔分け時にスプレッドシートを変更するための関数。
-function discrimination_on_sheet_gs(input, num, mo_prefix) {
+function discrimination_on_sheet_gs(input, num, mo_prefix, fa_prefix) {
   let nowtime = new Date();
   let time = new Date(nowtime.getFullYear(), nowtime.getMonth(), nowtime.getDate());
   let ss = SpreadsheetApp.openById(id);
@@ -136,6 +132,7 @@ function discrimination_on_sheet_gs(input, num, mo_prefix) {
       let shsexrow = shsex.getLastRow() + 1;
       shsex.getRange(shsexrow, 1, 1, 2).setValues([[input[k], date]]);
       shsex.getRange(shsexrow, 3).setFormulaR1C1("=ROUNDDOWN((TODAY()-R" + shsexrow + "C2)/7)");
+      shsex.getRange(shsexrow, 4, 1, 2).setValues([[mo_prefix, fa_prefix]]);
     }
     //処分マウスシートに書き込み
     if (input[k + 2] > 0) {

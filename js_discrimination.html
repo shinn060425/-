@@ -93,14 +93,15 @@
     
     let input = [input_female ,input_male ,slaughter_female ,slaughter_male];
     
-    let prefix = mouse_table.rows[row].cells[5].innerHTML;
+    let mo_prefix = mouse_table.rows[row].cells[5].innerHTML;
+    let fa_prefix = mouse_table.rows[row].cells[6].innerHTML;
     //change_of_sheet_gsに(変更する匹数、選択されているラジオボタンの行数、交配メスのprefix)を投げる
     google.script.run.withSuccessHandler(function(){
       alert("スプレッドシートに入力しました！");
       loadsheet();
     }).withFailureHandler(function(){
       alert("入力に失敗しました");
-    }).discrimination_on_sheet_gs(input, row, prefix);
+    }).discrimination_on_sheet_gs(input, row, mo_prefix, fa_prefix);
   }
   
   window.addEventListener('DOMContentLoaded', loadsheet());

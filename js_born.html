@@ -60,7 +60,8 @@
       alert("マウスを選んでください");
       return;
     }
-    let prefix = mouse_table.rows[row].cells[4].innerHTML;
+    let mo_prefix = mouse_table.rows[row].cells[4].innerHTML;
+    let fa_prefix = mouse_table.rows[row].cells[9].innerHTML;
     let list = ["female", "male"];
     let value = [];
     let born_date = Number(document.getElementById('date').value);
@@ -72,7 +73,7 @@
       loadsheet();
     }).withFailureHandler(function(){
       alert("入力に失敗しました");
-    }).input_to_sheet_gs(value, born_date, prefix);
+    }).input_to_sheet_gs(value, born_date, mo_prefix, fa_prefix);
   }
   
   //selectの要素内に0から10までの選択肢を作成する関数。
